@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Map</title>
+    <meta content="initial-scale=1.0" name="viewport">
+    <meta charset="utf-8">
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+            height: 100%;
+        }
+
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWbTKa7dPOA4jBfsotOO7tiNeBqk_lgIE"></script>
+<script>
+    // declare map var for the map layout and store all the demo accident coordinates
+    var map;
+    var locations = [
+        ['',29.72868,-95.46022],
+        ['',29.808233,-95.336021],
+        ['',29.697172,-95.288391],
+        ['',29.689341,-95.557533],
+        ['',29.744165,-95.361115],
+        ['',29.674845,-95.560448],
+        ['',29.725718,-95.476395],
+        ['',29.814802,-95.375938],
+        ['',29.704597,-95.557411],
+        ['',29.939081,-95.38147],
+        ['',29.680752,-95.381218],
+        ['',29.766062,-95.455818],
+        ['',29.777077,-95.36937],
+        ['',29.869806,-95.407852],
+        ['',29.833372,-95.384331],
+        ['',29.74765,-95.55793],
+        ['',29.845453,-95.392624],
+        ['',29.737036,-95.557755],
+        ['',29.937719,-95.432121],
+        ['',29.940561,-95.413773],
+        ['',29.600216,-95.286446],
+        ['',29.814119,-95.37574],
+        ['',29.831854,-95.563667],
+        ['',29.735586,-95.644096],
+        ['',29.740953,-95.458351],
+        ['',29.81278,-95.563606],
+        ['',29.754202,-95.455444],
+        ['',29.737751,-95.50103],
+        ['',29.784798,-95.562965],
+        ['',29.784895,-95.64492],
+        ['',29.965405,-95.418861],
+        ['',29.939293,-95.331734],
+        ['',29.733156,-95.372444],
+        ['',29.780581,-95.454178],
+        ['',29.898005,-95.412376],
+        ['',29.669153,-95.262543],
+        ['',29.598827,-95.353302],
+        ['',29.790005,-95.371902],
+        ['',29.675964,-95.542091],
+        ['',29.93755,-95.482979],
+        ['',29.929913,-95.544098],
+        ['',29.79706,-95.271584],
+        ['',29.703489,-95.604462],
+        ['',29.69763,-95.288788],
+        ['',29.77791,-95.381104],
+        ['',29.875904,-95.411575],
+        ['',29.702143,-95.295525],
+        ['',29.736507,-95.588615],
+        ['',29.689404,-95.557404],
+        ['',29.597775,-95.386536],
+        ['',29.961014,-95.547508],
+        ['',29.747288,-95.456444],
+        ['',29.685095,-95.277161],
+        ['',29.851442,-95.510178],
+        ['',29.915033,-95.412697],
+        ['',29.86725,-95.564011],
+        ['',29.680779,-95.366531],
+        ['',29.600807,-95.228569],
+        ['',29.643684,-95.386978],
+        ['',29.729679,-95.46344],
+        ['',29.729038,-95.441483],
+        ['',29.772776,-95.56266],
+        ['',29.888966,-95.411964],
+        ['',29.939072,-95.35614],
+        ['',29.733576,-95.3713],
+        ['',29.644056,-95.539078],
+        ['',29.657635,-95.387009],
+        ['',29.673273,-95.289314],
+        ['',29.722178,-95.557594],
+        ['',29.736166,-95.605843],
+        ['',29.812897,-95.429428],
+        ['',29.732201,-95.387512],
+        ['',29.597258,-95.387192],
+        ['',29.641079,-95.243248],
+        ['',29.708538,-95.305214],
+        ['',29.77002,-95.365746],
+        ['',29.813805,-95.361275],
+        ['',29.870525,-95.412636],
+        ['',29.600183,-95.464844],
+        ['',29.656008,-95.50843],
+        ['',29.667749,-95.382988],
+        ['',29.745569,-95.361282],
+        ['',29.939444,-95.397194],
+        ['',29.902794,-95.551804],
+        ['',29.931725,-95.412003],
+        ['',29.68837,-95.570274],
+        ['',29.791019,-95.563515],
+        ['',29.723642,-95.490814],
+        ['',29.7777,-95.429512],
+        ['',29.674633,-95.560425],
+        ['',29.736696,-95.576172],
+        ['',29.722095,-95.376701],
+        ['',29.704826,-95.55146],
+        ['',29.948824,-95.416687],
+        ['',29.870031,-95.384872],
+        ['',29.77379,-95.247452],
+        ['',29.723055,-95.501068],
+        ['',29.736753,-95.508339],
+        ['',29.653553,-95.550423],
+        ['',29.60578,-95.476997],
+        ['',29.704517,-95.557297]
+        // ['midtown', 29.731609, -95.392302],
+        // ['610_1', 29.812646, -95.423720],
+        // ['610_2', 29.809221, -95.439891],
+        // ["",29.780551, -95.339947],
+    ];
+
+    initMap();
+
+    function initMap() {
+
+        // testing coordinates
+        Corrd_start = {lat: 29.646735, lng: -95.542118};
+        Corrd_end = {lat: 29.955058, lng: -95.289140};
+
+        // set up the google API service
+        var directionsService = new google.maps.DirectionsService;
+
+        // Set up the map parameters
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: Corrd_start,
+            optimized: false,
+            zoom: 15,
+            styles: [
+                {
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "color": "#ebe3cd"
+                        }
+                    ]
+                },
+                {
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#523735"
+                        }
+                    ]
+                },
+                {
+                    "elementType": "labels.text.stroke",
+                    "stylers": [
+                        {
+                            "color": "#f5f1e6"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "administrative",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                            "color": "#c9b2a6"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "administrative.land_parcel",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                            "color": "#dcd2be"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "administrative.land_parcel",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#ae9e90"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "landscape.natural",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "color": "#dfd2ae"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "color": "#dfd2ae"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#93817c"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi.park",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#a5b076"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi.park",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#447530"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "color": "#f5f1e6"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.arterial",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "color": "#fdfcf8"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.highway",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "color": "#f8c967"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.highway",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                            "color": "#e9bc62"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.highway.controlled_access",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "color": "#e98d58"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.highway.controlled_access",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                            "color": "#db8555"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.local",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#806b63"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "transit.line",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "color": "#dfd2ae"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "transit.line",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#8f7d77"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "transit.line",
+                    "elementType": "labels.text.stroke",
+                    "stylers": [
+                        {
+                            "color": "#ebe3cd"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "transit.station",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "color": "#dfd2ae"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "water",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#b9d3c2"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "water",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#92998d"
+                        }
+                    ]
+                }
+            ]
+        });
+
+        // Map all the locations
+        markers();
+
+        // Mark starting and destination point
+        var marker1 = new google.maps.Marker({
+            position: Corrd_start,
+            map: map,
+        });
+        var marker2 = new google.maps.Marker({
+            position: Corrd_end,
+            map: map,
+        });
+
+        // call the function to compute the routes
+        calculateAndDisplayRoute(directionsService);
+    }
+
+    function calculateAndDisplayRoute(directionsService) {
+
+        // set up direction service
+        directionsService.route({
+            origin: Corrd_start,
+            destination: Corrd_end,
+            travelMode: 'DRIVING',
+            provideRouteAlternatives: true
+        }, function (response, status) {
+
+            // set up THREE different instances of Renderer objs so it can display three routes at the same time
+            var directionsDisplay1 = new google.maps.DirectionsRenderer({
+                suppressMarkers: true,
+                polylineOptions: {
+                    strokeColor: "#494252",
+                    strokeOpacity: 1.0,
+                },
+                routeIndex: 0
+            });
+            var directionsDisplay2 = new google.maps.DirectionsRenderer({
+                suppressMarkers: true,
+                polylineOptions: {
+                    strokeColor: "#494252",
+                    strokeOpacity: 1.0,
+                },
+                routeIndex: 1
+            });
+            var directionsDisplay3 = new google.maps.DirectionsRenderer({
+                suppressMarkers: true,
+                polylineOptions: {
+                    strokeColor: "#494252",
+                    strokeOpacity: 1.0,
+                },
+                routeIndex: 2
+            });
+
+            // display the routes
+            directionsDisplay1.setMap(map);
+            directionsDisplay2.setMap(map);
+            directionsDisplay3.setMap(map);
+            if (status === 'OK') {
+                var i, pos, count1 = 0,count2 = 0,count3 = 0;
+
+            // creating THREE polylines objs so it can return the number of markers passed in the middle, and also the message window containing the information
+//-------------------------------------------------------------D1------------------------------------------------------------
+                directionsDisplay1.setDirections(response);
+                var poly1 = new google.maps.Polyline({
+                    map: map,
+                    zIndex:600,
+                    path: directionsDisplay1.directions.routes[0].overview_path,
+                    strokeOpacity: 0.0,
+                    strokeWeight: 3,
+                    strokeColor: "#494252",
+                });
+                for (i = 0; i < locations.length; i++) {
+                    pos = new google.maps.LatLng(locations[i][1], locations[i][2]);
+                    if (google.maps.geometry.poly.isLocationOnEdge(pos, poly1, 10e-4)) {
+                        count1 = count1 + 1;
+                    }
+                }
+                var infowindow1 = new google.maps.InfoWindow({
+                    content: "Accident(s): "+count1
+                });
+                var marker1 = new google.maps.Marker({
+                    position: directionsDisplay1.directions.routes[0].overview_path[Math.floor((directionsDisplay1.directions.routes[0].overview_path.length)/2)],
+                    map: map,
+                    icon:{
+                        path:google.maps.SymbolPath.BACKWARD_OPEN_ARROW,
+                        scale:6,
+                        strokeColor: "#12e038",
+                    },
+                });
+                marker1.addListener('click',function () {
+                    infowindow1.open(map,marker1);
+                });
+//-------------------------------------------------------------D2------------------------------------------------------------
+                directionsDisplay2.setDirections(response);
+                var poly2 = new google.maps.Polyline({
+                    map: map,
+                    path: directionsDisplay2.directions.routes[1].overview_path,
+                    strokeOpacity: 0.0,
+                    strokeWeight: 3,
+                    strokeColor: "#494252"
+                });
+                for (i = 0; i < locations.length; i++) {
+                    pos = new google.maps.LatLng(locations[i][1], locations[i][2]);
+                    if (google.maps.geometry.poly.isLocationOnEdge(pos, poly2, 10e-4)) {
+                        count2 = count2 + 1;
+                    }
+                }
+                var infowindow2 = new google.maps.InfoWindow({
+                    content: "Accident(s): "+count2
+                });
+                var marker2 = new google.maps.Marker({
+                    position: directionsDisplay1.directions.routes[1].overview_path[Math.floor((directionsDisplay2.directions.routes[1].overview_path.length)/2)],
+                    map: map,
+                    icon:{
+                        path:google.maps.SymbolPath.BACKWARD_OPEN_ARROW,
+                        scale:6,
+                        strokeColor: "#12e038",
+                    },
+                });
+                marker2.addListener('click',function () {
+                    infowindow2.open(map,marker2);
+                });
+//-------------------------------------------------------------D3------------------------------------------------------------
+                directionsDisplay3.setDirections(response);
+                var poly3 = new google.maps.Polyline({
+                    map: map,
+                    path: directionsDisplay3.directions.routes[2].overview_path,
+                    strokeOpacity: 0.0,
+                    strokeColor: "#494252",
+                    strokeWeight: 3
+                });
+                poly3.setOptions(strokeOpacity=1.0);
+                for (i = 0; i < locations.length; i++) {
+                    pos = new google.maps.LatLng(locations[i][1], locations[i][2]);
+                    if (google.maps.geometry.poly.isLocationOnEdge(pos, poly3, 10e-4)) {
+                        count3 = count3 + 1;
+                    }
+                }
+
+                var infowindow3 = new google.maps.InfoWindow({
+                    content: "Accident(s): "+count3
+                });
+                var marker3 = new google.maps.Marker({
+                    position: directionsDisplay3.directions.routes[2].overview_path[Math.floor((directionsDisplay3.directions.routes[2].overview_path.length)/2)],
+                    map: map,
+                    icon:{
+                        path:google.maps.SymbolPath.BACKWARD_OPEN_ARROW,
+                        scale:6,
+                        strokeColor: "#12e038",
+                    },
+                });
+                marker3.addListener('click',function () {
+                    infowindow3.open(map,marker3);
+                });
+
+                // Computing the safest route(s) and also make sure the best route stay on top
+                if (count1<count2 && count1<count3){
+                directionsDisplay1.setOptions(directionsDisplay1.polylineOptions.strokeColor="#12e038");
+                directionsDisplay1.setOptions(directionsDisplay1.polylineOptions.zIndex=600);
+                }
+                else if (count2<count1 && count2<count3){
+                directionsDisplay2.setOptions(directionsDisplay2.polylineOptions.strokeColor="#12e038");
+                directionsDisplay2.setOptions(directionsDisplay2.polylineOptions.zIndex=600);
+                }
+                else if(count3<count1 && count3<count2){
+                directionsDisplay3.setOptions(directionsDisplay3.polylineOptions.strokeColor="#12e038");
+                directionsDisplay3.setOptions(directionsDisplay3.polylineOptions.zIndex=600);
+                } else {
+                if(count1===count2&&count2===count3){
+                directionsDisplay1.setOptions(directionsDisplay1.polylineOptions.strokeColor="#12e038");
+                directionsDisplay1.setOptions(directionsDisplay1.polylineOptions.zIndex=600);
+                directionsDisplay2.setOptions(directionsDisplay2.polylineOptions.strokeColor="#12e038");
+                directionsDisplay2.setOptions(directionsDisplay2.polylineOptions.zIndex=600);
+                directionsDisplay3.setOptions(directionsDisplay3.polylineOptions.strokeColor="#12e038");
+                directionsDisplay3.setOptions(directionsDisplay3.polylineOptions.zIndex=600);
+                }
+                else if(count1===count2){
+                directionsDisplay1.setOptions(directionsDisplay1.polylineOptions.strokeColor="#12e038");
+                directionsDisplay1.setOptions(directionsDisplay1.polylineOptions.zIndex=600);
+                directionsDisplay2.setOptions(directionsDisplay2.polylineOptions.strokeColor="#12e038");
+                directionsDisplay2.setOptions(directionsDisplay2.polylineOptions.zIndex=600);
+                }
+                else if(count2===count3){
+                directionsDisplay2.setOptions(directionsDisplay2.polylineOptions.strokeColor="#12e038");
+                directionsDisplay2.setOptions(directionsDisplay2.polylineOptions.zIndex=600);
+                directionsDisplay3.setOptions(directionsDisplay3.polylineOptions.strokeColor="#12e038");
+                directionsDisplay3.setOptions(directionsDisplay3.polylineOptions.zIndex=600);
+                }
+                else if(count1===count3){
+                directionsDisplay1.setOptions(directionsDisplay1.polylineOptions.strokeColor="#12e038");
+                directionsDisplay1.setOptions(directionsDisplay1.polylineOptions.zIndex=600);
+                directionsDisplay3.setOptions(directionsDisplay3.polylineOptions.strokeColor="#12e038");
+                directionsDisplay3.setOptions(directionsDisplay3.polylineOptions.zIndex=600);
+                }
+
+            } }else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+    }
+
+    // setting parameters for the markers for the accident coordinates
+    function markers() {
+        var marker, i;
+        for (i = 0; i < locations.length; i++) {
+            marker = new google.maps.Marker({
+                position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+                map: map,
+                optimized: false,
+                zIndex: -9,
+                icon:{
+                  path:google.maps.SymbolPath.CIRCLE,
+                  scale:5,
+                  fillColor: "#999",
+                },
+            });
+        }
+    }
+
+
+</script>
+</body>
+</html>
+
+
+
